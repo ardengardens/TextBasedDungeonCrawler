@@ -2,6 +2,8 @@
 import json
 import os
 
+# define the save and load game functions for later use
+
 SAVE_FILE = "savegame.json"
 
 
@@ -18,7 +20,7 @@ def load_game():
     return None
 
 
-# --- Start of the game ---
+# Actual game
 state = load_game()
 
 if state is None:
@@ -36,7 +38,7 @@ else:
 print("There is a wall sconce that contains an unlit candle to your right, and a closed door to your left.")
 print("(Type 'save' to save your game or 'quit' to leave.)")
 
-# --- Game loop ---
+# game loop
 while True:
     choice = input("Do you go to the 'door' or do you light the 'sconce'? ").lower()
 
