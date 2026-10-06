@@ -24,6 +24,9 @@ def describe_room(state):
     elif state["room"] == "chamber":
         print("You are in a small stone chamber. The floor is covered in moss.")
         print("A towering white fountain with blue tint is just ahead, and the hallway door is still open behind you.")
+    elif state["room"] == "garden":
+        print("You feel a gentle breeze and smell the aroma of roses wafting through the air.")
+        print("There's a glowing teaset on a picnic blanket nearby.")
 
 
 # load the game from the save file or start a new game
@@ -33,12 +36,19 @@ if state is None:
     # Brand new game
     print("You light a candle in your hand and see an empty hallway lined with doors and windows and unlit wall sconces.")
     name = input("What is your name? ")
-    state = {"name": name, "sconce_lit": False, "room": "hallway", "has_key": False}
+    state = {
+        "name": name,
+        "sconce_lit": False,
+        "room": "hallway",
+        "has_key": False,
+        "portal_open": False,
+    }
     print("Welcome,", state["name"] + "!")
 else:
     # Old save files may be missing the newer entries, so fill them in
     state.setdefault("room", "hallway")
     state.setdefault("has_key", False)
+    state.setdefault("portal_open", False)
     print("Welcome back,", state["name"] + "!")
 
 describe_room(state)
@@ -51,6 +61,8 @@ while True:
         prompt = "Do you go to the 'door' or do you light the 'sconce'? "
     elif state["room"] == "chamber":
         prompt = "Do you 'look' around, try the 'gate', or go 'back' to the hallway? "
+    elif state["room"] == "garden":
+        prompt = "Do you 'dance', step into the 'portal', or go 'back' to the chamber? "
 
     choice = input(prompt).lower()
 
@@ -97,7 +109,9 @@ while True:
         elif choice == "gate":
             if state["has_key"]:
                 print("The key breaks in the lock and the gate creaks open.")
-                break
+                state["room"] = "garden"
+                describe_room(state)
+                save_game(state)
             else:
                 print("The gate is locked.")
 
@@ -107,3 +121,29 @@ while True:
 
         else:
             print("Water sprinkles onto the stone floor from the splashback of the fountain.")
+
+    # garden
+    elif state["room"] == "garden":
+        if choice == "dance":
+            if state["portal_open"]:
+                print("The portal is already open.")
+            else:
+                state["portal_open"] = True
+                print("You dance and see flowers sprout and bloom around your feet.")
+                print("A portal appears in between two rose bushes in bloom.")
+                save_game(state)
+
+        elif choice == "portal":
+            if state["portal_open"]:
+                print("You step through the portal.")
+                print("You feel the sensation of being hugged as you float through a starry tunnel.")
+                break   # placeholder until I figure out what the next room is going to be.
+            else:
+                print("There's no portal here, only rose bushes.")
+
+        elif choice == "back":
+            state["room"] = "chamber"
+            describe_room(state)
+
+        else:
+            print("The roses sway gently in the breeze.")
